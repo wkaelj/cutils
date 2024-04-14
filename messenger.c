@@ -78,8 +78,8 @@ int unix_log_perror(
     u32 funcLen = strlen(func);
     u32 lineLen = strlen(line);
 
-    u32 mLen;
-    m && (mLen = strlen(m));
+    u32 mLen = 0;
+    if (m) (mLen = strlen(m));
 
     // add 2 chars to make room for newline and tab
     u32 length = fileLen + funcLen + lineLen + mLen;

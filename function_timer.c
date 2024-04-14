@@ -1,12 +1,18 @@
 #include "function_timer.h"
 
 #include <stdio.h>
+#include <string.h>
 
 #include "types.h"
+#include "platform.h"
+#include "string_util.h"
 
 #define LINE_LENGTH_BUFFER 512
 #define FUNCTION_LENGTH_BUFFER 128
 #define FUNCTION_TIMER_CACHE "function_timer.csv"
+
+#define max_value(a, b) (a > b ? a : b)
+#define min_value(a, b) (a < b ? a : b)
 
 //
 // Types
@@ -28,14 +34,14 @@ struct TimerData
 struct FunctionListNode_t
 {
     struct TimerData timerData;
-    LIST_ENTRY(FunctionListNode_t); data;
+    LIST_ENTRY(FunctionListNode_t) data;
 };
 
 struct
 {
     bool initialized;
 
-    LIST_HEAD(FunctionListHead_t, struct FunctionListNode_t); functions;
+    LIST_HEAD(FunctionListHead_t, FunctionListNode_t) functions;
 
 } g_timerData = {};
 
@@ -60,7 +66,7 @@ void export_list_to_file(
 void create_timer_string(char *restrict buf, struct TimerData data);
 
 // convert the clock_t time data to ms
-f64 clock_to_ms(__clock_t time);
+f64 sec_to_ms(f64 time);
 
 //
 // Public methods
@@ -86,7 +92,7 @@ void __attribute__((destructor)) terminate_timer(void)
     while (!LIST_EMPTY(&g_timerData.functions))
     {
         np = LIST_FIRST(&g_timerData.functions);
-        LIST_REMOVE(np, atan);
+        LIST_REMOVE(np, data);
         free(np);
     };
 
@@ -110,7 +116,7 @@ struct FunctionTimerData start_timer(const char *func)
     cutil_string_truncate(t.functionName, &funcNameLength, func, '(', false);
 
     // get time
-    t.startTime = cutil_platform_get_running_time();
+    t.startTime = cutil_platform_get_time();
 
     return t;
 }
@@ -125,7 +131,7 @@ void end_timer(struct FunctionTimerData t)
     }
 
     // get time clock ticks
-    u64 endTime = cutil_platform_get_running_time();
+    f64 endTime = cutil_platform_get_time();
     if (endTime < t.startTime)
     {
         printf(
@@ -133,7 +139,7 @@ void end_timer(struct FunctionTimerData t)
         return;
     }
 
-    const f64 executionTime = clock_to_ms(endTime - t.startTime);
+    const f64 executionTime = sec_to_ms(endTime - t.startTime);
 
     struct FunctionListNode_t *node = find_function_data(t.functionName);
 
@@ -179,7 +185,7 @@ void add_data_point(struct FunctionListNode_t *node, f64 executionTime)
 // add a new element to the list
 void add_new_element(const char *name, f64 executionTime)
 {
-    struct FunctionListNode_t *node = new_var(struct FunctionListNode_t);
+    struct FunctionListNode_t *node = malloc(sizeof(struct FunctionListNode_t));
     node->timerData                 = (struct TimerData){
                         .functionName        = {},
                         .avgTime             = executionTime,
@@ -230,7 +236,7 @@ void export_list_to_file(
     struct FunctionListNode_t *np = NULL;
     LIST_FOREACH(np, listHead, data)
     {
-        createTimerString(lineBuf, np->timerData);
+        create_timer_string(lineBuf, np->timerData);
         fputs(lineBuf, file);
         printf("\t%s", lineBuf);
     }
@@ -238,14 +244,6 @@ void export_list_to_file(
     fclose(file);
 }
 
-f64 clock_to_ms(clock_t time)
-{
-
-    f64 ftime = time;
-    ftime *= 1000.0f;
-    ftime /= CLOCKS_PER_SEC;
-
-    return ftime;
-}
+f64 sec_to_ms(f64 time) { return time * 1000; }
 
 #endif // FUNCTION_TIMER_NO_DIAGNOSTIC

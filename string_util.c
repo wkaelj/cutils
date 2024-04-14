@@ -1,5 +1,6 @@
 #include "string_util.h"
 
+#include <string.h>
 // it will strip everything before the last instance of stripper
 // Example: "/home/path/to/file/config.txt" -> "config.txt"
 Result

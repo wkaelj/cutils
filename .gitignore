@@ -1,0 +1,14 @@
+*.o
+*.a
+*.exe
+*.so
+*.DLL
+*.dylib
+.clangd
+.cache
+
+compile_commands.json
+
+build/
+bin/
+objs/

@@ -12,8 +12,8 @@
  * It also has functionality to convert filepaths to
  * be relative to the folder with the executable file is, not the folder the
  * program was run from. This requires the user to set the executable directory
- * using a call to cutil_platform_set_executable_folder(argv[0]). If this is not done,
- * the program with crash.
+ * using a call to cutil_platform_set_executable_folder(argv[0]). If this is not
+ * done, the program with crash.
  *
  * All filepaths passed to functions here will be automatically localized,
  * unless they start with a './', in which case it is assumed they should be
@@ -125,8 +125,8 @@ bool cutil_platform_test_for_file(const char *filepath);
  * Test the size of a file. It will return the size of the file
  * in bytes. It will return 0 if the file does not exist, or for failure.
  *
- * It automatically localizes the filename, see cutil_platform_localize_file_name,
- * like all other file utils.
+ * It automatically localizes the filename, see
+ * cutil_platform_localize_file_name, like all other file utils.
  *
  * @param filepath the file to test the size of, must be a valid string
  *
@@ -198,4 +198,4 @@ Result cutil_platform_delete_file(const char *restrict filepath);
  * @param filepath the folder to delete
  * @return Result
  */
-Result cutil_platform_delete_folder(const char *restrict filepath);
+Result cutil_platform_delete_folder(const char *restrict);

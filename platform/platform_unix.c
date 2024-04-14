@@ -5,11 +5,16 @@
 #include <sys/cdefs.h>
 #include <unistd.h>
 #include <sys/stat.h>
-#include <time.h>
+#include <sys/time.h>
 #include <errno.h>
 #include <stdio.h>
 #include <dirent.h>
 #include <ftw.h>
+#include <string.h>
+#include "../types.h"
+#include "../messenger.h"
+
+#include "../string_util.h"
 
 /**
  * @brief Localize a file name. This macro is more convientent then writing the
@@ -22,26 +27,27 @@
  * filepaths length. the macro creates it
  *
  */
-#define localize_path(inputPath, outputPathName, outputPathLength)  \
-    u32 outputPathLength = 0;                                       \
+#define localize_path(inputPath, outputPathName, outputPathLength)         \
+    u32 outputPathLength = 0;                                              \
     cutil_platform_localize_file_name(NULL, inputPath, &outputPathLength); \
-    char outputPathName[outputPathLength];                          \
-    cutil_platform_localize_file_name(outputPathName, inputPath, &outputPathLength);
+    char outputPathName[outputPathLength];                                 \
+    cutil_platform_localize_file_name(                                     \
+        outputPathName, inputPath, &outputPathLength);
 
 #define assert_executable_directory_set()                                      \
     if (g_executableDirectory == NULL)                                         \
     {                                                                          \
         log_fatal(                                                             \
-            "The executable directory has not been set. Some cutils\n"    \
-            "require that the executable directory is set using\n"            \
-            "util_platform_set_executable_directory(argv[0]) in order to "            \
+            "The executable directory has not been set. Some cutils\n"         \
+            "require that the executable directory is set using\n"             \
+            "util_platform_set_executable_directory(argv[0]) in order to "     \
             "verify\n"                                                         \
             "that file operations are safe, for the developer and the user."); \
         abort();                                                               \
     }
 
-#define assert_allowed_file_operation(path)      \
-    if (!util_platform_is_allowed_file_operation(path)) \
+#define assert_allowed_file_operation(path)             \
+    if (!cutil_platform_is_allowed_file_operation(path)) \
         abort();
 
 // store the exectutable files directory
@@ -94,7 +100,8 @@ u32 cutil_platform_get_executable_folderStrLen(void)
     return g_executableDirectoryLength;
 }
 
-Result cutil_platform_localize_file_name(char *output, const char *path, u32 *max)
+Result
+cutil_platform_localize_file_name(char *output, const char *path, u32 *max)
 {
 
     const u32 pathLength = strlen(path);
@@ -182,7 +189,8 @@ u64 cutil_platform_test_file_size(const char *filepath)
 f64 cutil_platform_get_time(void)
 {
     struct timeval t;
-    gettime(&t);
+    gettimeofday(&t, NULL);
+    return t.tv_sec + t.tv_usec / 1.0e6;
 }
 
 time_t cutil_platform_get_file_modified_date(const char *filepath)
@@ -302,7 +310,7 @@ Result cutil_platform_delete_file(const char *restrict filepath)
     struct stat file_stats;
     if (stat(path, &file_stats) == -1)
     {
-        errno != EEXIST &&log_perror("%s", path);
+        if (errno != EEXIST) log_perror("%s", path);
         return RS_FAILURE;
     }
     if (!S_ISREG(file_stats.st_mode))

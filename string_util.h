@@ -9,6 +9,8 @@
 //
 // This didn't age well - Kael July 23 2022
 
+#include "types.h"
+
 /**
  * Remove the front of a string up to the last instance of a character.
  * Example(stripper='/'): "/home/user/document.txt" -> "document.txt"

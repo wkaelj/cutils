@@ -26,3 +26,29 @@ typedef int64_t i64;
 typedef uint64_t u64;
 typedef float f32;
 typedef double f64;
+
+#ifdef DEBUG
+#include "messenger.h"
+#define db_assert_msg(statement, msg)                                   \
+    do                                                                  \
+    {                                                                   \
+        if (!(statement))                                               \
+        {                                                               \
+            log_fatal("Assert (%s) failed, \"%s\"", #statement, (msg)); \
+            abort();                                                    \
+        }                                                               \
+    }
+#define db_assert(statement)                             \
+    do                                                   \
+    {                                                    \
+        if (!(statement))                                \
+        {                                                \
+            log_fatal("Assert (%s) failed", #statement); \
+            abort();                                     \
+        }                                                \
+    }
+
+#else
+#define db_assert_msg(statement, msg) ((void)0)
+#define db_assert(statement) ((void)0)
+#endif

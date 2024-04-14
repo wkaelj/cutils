@@ -2,8 +2,17 @@
 #include <stdio.h>
 #include <sys/stat.h>
 
+#include "platform.h"
+#include "messenger.h"
+
+#define min_value(a, b) (a < b ? a : b)
+#define max_value(a, b) (a > b ? a : b)
+
 // just a wrapper, to help keep the file utilities organized
-u64 spread_file_size(const char *path) { return cutil_platform_test_file_size(path); }
+u64 spread_file_size(const char *path)
+{
+    return cutil_platform_test_file_size(path);
+}
 
 bool cutil_read_file_exists(const char *path)
 {

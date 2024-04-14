@@ -1,7 +1,9 @@
-cmake_minimum_required(VERSION 3.0.0)
+cmake_minimum_required(VERSION 3.5.0)
 
-set(C_STANDARD c2x)
+project(cutils LANGUAGES C)
+
+set(CMAKE_C_STANDARD 23)
 
 file(GLOB SRC ${PROJECT_SOURCE_DIR}/*.c)
 
-add_library(cutils ${SRC})
+add_library(${PROJECT_NAME} SHARED ${SRC})
