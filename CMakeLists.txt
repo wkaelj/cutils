@@ -6,4 +6,6 @@ set(CMAKE_C_STANDARD 23)
 
 file(GLOB SRC ${PROJECT_SOURCE_DIR}/*.c)
 
-add_library(${PROJECT_NAME} SHARED ${SRC})
+add_library(${PROJECT_NAME} STATIC ${SRC})
+
+target_include_directory(${PROJECT_NAME} PUBLIC ${PROJECT_SOURCE_DIR})
