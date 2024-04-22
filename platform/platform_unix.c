@@ -1,6 +1,6 @@
 #include "../platform.h"
 
-#ifdef __unix
+#ifdef __unix__
 
 #include <sys/cdefs.h>
 #include <unistd.h>
@@ -46,7 +46,7 @@
         abort();                                                               \
     }
 
-#define assert_allowed_file_operation(path)             \
+#define assert_allowed_file_operation(path)              \
     if (!cutil_platform_is_allowed_file_operation(path)) \
         abort();
 
@@ -95,7 +95,7 @@ const char *cutil_platform_get_executable_folder(void)
     return g_executableDirectory;
 }
 
-u32 cutil_platform_get_executable_folderStrLen(void)
+u32 cutil_platform_get_executable_folde_str_len(void)
 {
     return g_executableDirectoryLength;
 }
@@ -310,7 +310,8 @@ Result cutil_platform_delete_file(const char *restrict filepath)
     struct stat file_stats;
     if (stat(path, &file_stats) == -1)
     {
-        if (errno != EEXIST) log_perror("%s", path);
+        if (errno != EEXIST)
+            log_perror("%s", path);
         return RS_FAILURE;
     }
     if (!S_ISREG(file_stats.st_mode))
