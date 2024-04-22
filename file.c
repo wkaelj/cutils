@@ -111,6 +111,7 @@ cutil_write_file_binary(const char *path, const void *contents, const u32 size)
     if (fwrite(contents, size, 1, file) == 0 && ferror(file))
     {
         log_error("Failed to write data to file '%s'", path);
+        fclose(file);
         return RS_FAILURE;
     }
 
