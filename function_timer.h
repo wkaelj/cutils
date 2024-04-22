@@ -63,18 +63,6 @@ struct FunctionTimerData
 };
 
 /**
- * @brief Initialize the function timer
- *
- */
-void init_timer(void);
-
-/**
- * @brief terminate the function timer
- *
- */
-void terminate_timer(void);
-
-/**
  * @brief Start the timer. Should be called right before the timed function.
  * This also truncates the string, so functionName(args) becomes functionName.
  *

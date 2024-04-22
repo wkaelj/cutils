@@ -72,6 +72,7 @@ f64 sec_to_ms(f64 time);
 // Public methods
 //
 
+#ifndef FUNCTION_TIMER_NO_DIAGNOSTIC
 void __attribute__((constructor)) init_timer(void)
 {
 
@@ -98,6 +99,8 @@ void __attribute__((destructor)) terminate_timer(void)
 
     g_timerData.initialized = false;
 }
+
+#endif
 
 struct FunctionTimerData start_timer(const char *func)
 {
